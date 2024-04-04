@@ -18,6 +18,7 @@ interface ProfileInfo {
 
 const Profile = (): React.ReactElement => {
   const { user, isLoading } = useAuth0()
+  const [isFetchingPosts, setIsFetchingPosts] = useState(true)
   const [isFirstTime, setIsFirstTime] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [userListings, setUserListings] = useState<any[]>([])
@@ -94,6 +95,7 @@ const Profile = (): React.ReactElement => {
 
   useEffect(() => {
     const renderPosts = async (): Promise<any> => {
+      setIsFetchingPosts(true)
       const posts = await getUserListings()
       try {
         const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
@@ -110,8 +112,10 @@ const Profile = (): React.ReactElement => {
             postDate: post.postDate
           }
         }))
+        setIsFetchingPosts(false)
         setUserListings(newListings)
       } catch {
+        setIsFetchingPosts(false)
       }
     }
     void renderPosts()
@@ -282,7 +286,15 @@ const Profile = (): React.ReactElement => {
               </div>
             </div>
           </div>
-          <Listings response={userListings} isProfile={true} />
+          {
+            isFetchingPosts
+              ? <div className='no-listings' id='home-load'>
+                  <div className='loading-content'>
+                    <span className="loader"></span>
+                  </div>
+                </div>
+              : <Listings response={userListings} isProfile={true} />
+          }
         </div>
       </header>
     </div>
