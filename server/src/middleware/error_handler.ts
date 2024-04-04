@@ -4,6 +4,7 @@ import { ZodError } from 'zod';
 import LOGGER from '../configs/logging';
 import { APIError, Status } from '../types';
 
+// Handle errors w/ frontend and backend communication
 const errorMiddleware = (
   err: Error,
   _req: express.Request,
