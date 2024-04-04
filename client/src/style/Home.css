@@ -28,6 +28,10 @@
   gap: 2rem;
 }
 
+#home-load {
+  width: 100%;
+}
+
 @media screen and (max-width: 1024px) {
   .content {
     flex-direction: column;
