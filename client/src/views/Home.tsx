@@ -12,6 +12,7 @@ const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
 
 const Home = (): React.ReactElement => {
   const [listings, setListings] = useState<any>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [p] = useSearchParams()
   const [filters, setFilters] = useState<any>({
     location: '',
@@ -80,6 +81,7 @@ const Home = (): React.ReactElement => {
 
   useEffect(() => {
     const renderPosts = async (): Promise<any> => {
+      setIsLoading(true)
       const posts = await getListings()
       try {
         const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
@@ -91,8 +93,9 @@ const Home = (): React.ReactElement => {
             price: parseFloat(post.price)
           }
         }))
-        setListings(newListings)
-      } catch (error) {
+        setIsLoading(false)
+          setListings(newListings)
+        } catch (error) {
         console.log('Failed to render listings', error)
       }
     }
@@ -106,7 +109,15 @@ const Home = (): React.ReactElement => {
                 <div className='content'>
                   <Filter setFilters={setFilters}/>
                   <FilterMobile setFilters={setFilters}/>
-                  <Listings response={listings} isProfile={false}/>
+                  {
+            isLoading
+              ? <div className='no-listings' id='home-load'>
+                  <div className='loading-content'>
+                    <span className="loader"></span>
+                  </div>
+                </div>
+              : <Listings response={listings}isProfile={false}/>
+          }
                 </div>
             </header>
         </div>
