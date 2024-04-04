@@ -12,6 +12,7 @@ const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
 
 const Home = (): React.ReactElement => {
   const [listings, setListings] = useState<any>([])
+  const [isLoading, setIsLoading] = useState(true)
   const [p] = useSearchParams()
   const [filters, setFilters] = useState<any>({
     location: '',
@@ -80,6 +81,7 @@ const Home = (): React.ReactElement => {
 
   useEffect(() => {
     const renderPosts = async (): Promise<any> => {
+      setIsLoading(true)
       const posts = await getListings()
 
       if (posts !== undefined) {
@@ -100,6 +102,7 @@ const Home = (): React.ReactElement => {
               }
             }
           }))
+          setIsLoading(false)
           setListings(newListings)
         } catch {
         }
@@ -115,7 +118,15 @@ const Home = (): React.ReactElement => {
         <div className='content'>
           <Filter setFilters={setFilters}/>
           <FilterMobile setFilters={setFilters}/>
-          <Listings response={listings}/>
+          {
+            isLoading
+              ? <div className='no-listings' id='home-load'>
+                  <div className='loading-content'>
+                    <span className="loader"></span>
+                  </div>
+                </div>
+              : <Listings response={listings}/>
+          }
         </div>
       </header>
     </div>
