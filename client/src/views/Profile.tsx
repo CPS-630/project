@@ -16,6 +16,7 @@ interface ProfileInfo {
   year: number
 }
 
+// Profile page HTML definition
 const Profile = (): React.ReactElement => {
   const { user, isLoading } = useAuth0()
   const [isFetchingPosts, setIsFetchingPosts] = useState(true)
@@ -29,12 +30,14 @@ const Profile = (): React.ReactElement => {
   })
   const { sendRequest } = useApi()
 
+  // Validate profile phone number during account setup
   const validateProfile = (): boolean => {
     return profileInfo.phoneNumber.length === 12 &&
     profileInfo.major.length > 0 &&
     /^\+[0-9]{10,15}$/.test(profileInfo.phoneNumber)
   }
 
+  // Properly format phone number strings
   const formatPhoneNumber = (phoneNumber: string): string => {
     // format phone number to +1 (555) 555-5555
     if (phoneNumber.length === 11) {
@@ -43,6 +46,8 @@ const Profile = (): React.ReactElement => {
       return phoneNumber
     }
   }
+
+  // Convert listing type info to an appropriate corresponding string
   const convertType = async (input: string): Promise<string> => {
     if (input === 'W') {
       return 'Wanted'
@@ -53,6 +58,7 @@ const Profile = (): React.ReactElement => {
     }
   }
 
+  // Fetch the images of a listing
   const getImage = async (id: string): Promise<string[]> => {
     try {
       const { status, response } = await sendRequest<string[]>({
@@ -75,6 +81,7 @@ const Profile = (): React.ReactElement => {
     }
   }
 
+  // Fetch the listings the user has made
   const getUserListings = async (): Promise<ListingInfo[]> => {
     try {
       const { status, response } = await sendRequest<ListingInfo[]>({
@@ -93,6 +100,7 @@ const Profile = (): React.ReactElement => {
     }
   }
 
+  // Fetch and render the user's listings
   useEffect(() => {
     const renderPosts = async (): Promise<any> => {
       setIsFetchingPosts(true)
@@ -121,6 +129,7 @@ const Profile = (): React.ReactElement => {
     void renderPosts()
   }, [])
 
+  // Toggle the editing mode for user profile setup / info updating
   const toggleEditing = async (): Promise<void> => {
     if (!isEditing) {
       setIsEditing(true)
@@ -136,6 +145,7 @@ const Profile = (): React.ReactElement => {
     window.location.reload()
   }
 
+  // Set / update profile info
   const handleInputChange = (e: any): void => {
     const { name, value } = e.target
     setProfileInfo(prevState => ({
@@ -144,6 +154,7 @@ const Profile = (): React.ReactElement => {
     }))
   }
 
+  // Display loading status while fetching profile information
   if (isLoading) {
     return (
       <div className='App'>
@@ -175,6 +186,7 @@ const Profile = (): React.ReactElement => {
     )
   }
 
+  // Obtain the correct ordinal indicator for a given year number
   function getOrdinalIndicator (year: number): string {
     const lastDigit = year % 10
     const lastTwoDigits = year % 100
@@ -195,6 +207,7 @@ const Profile = (): React.ReactElement => {
     }
   }
 
+  // Check if user profile is set up
   const healthCheck = useCallback(async () => {
     const { status, response } = await sendRequest<ProfileInfo>({
       method: 'GET',
@@ -226,6 +239,7 @@ const Profile = (): React.ReactElement => {
                   <FontAwesomeIcon icon={faEdit} onClick={() => { toggleEditing().catch(console.error) }}/>
                 </div>
               </div>
+              {/* Display first time setup alert for new users */}
               {
                 isFirstTime
                   ? <div className='first-time' onClick={() => { toggleEditing().catch(console.error) }}>
@@ -245,6 +259,7 @@ const Profile = (): React.ReactElement => {
                 <p>{user?.email}</p>
               </div>
               <div className='more-about-profile'>
+                {/* Editing profile info */}
                 {
                   isEditing
                     ? <div className='edit-profile'>

@@ -10,10 +10,13 @@ import Dashboard from '../components/Admin/Dashboard'
 import Users from '../components/Admin/Users'
 import Listings from '../components/Admin/Listings'
 
+// Admin page component definition
 const Admin = (): React.ReactElement => {
   const { isAuthenticated, user, getAccessTokenSilently, isLoading } = useAuth0()
   const [permissions, setPermissions] = useState<string[]>([])
   const [desiredView, setDesiredView] = useState<string>('dashboard')
+
+  // Obtain permissions payload
   const getPermissions = async (token: string): Promise<string[]> => {
     const payload = jwtDecode<{
       permissions?: string[]
@@ -21,11 +24,14 @@ const Admin = (): React.ReactElement => {
     return payload.permissions ?? []
   }
 
+  // Verify user is an admin
   useEffect(() => {
+    // Exits if user is not an authenticated admin
     if (user == null) {
       return
     }
 
+    // Fetch user's permissions from server
     const fetchPermissions = async (): Promise<void> => {
       try {
         const token = await getAccessTokenSilently()
@@ -40,6 +46,7 @@ const Admin = (): React.ReactElement => {
     void fetchPermissions()
   }, [user])
 
+  // Display Loading status while fetching permissions
   if (isLoading) {
     return (
             <div className='App'>
@@ -59,11 +66,13 @@ const Admin = (): React.ReactElement => {
         <div className='App'>
             <header className='App-header'>
                 <Nav />
+                {/* Display admin portal if authenticated, otherwise deny access */}
                 {
                     isAuthenticated
                       ? permissions.includes('admin:manage')
                         ? <div className='admin-container'>
                                 <div className='admin-content'>
+                                  {/* Sidebar displaying admin user's info and allow fast travel to manage users/listings */}
                                     <div className='admin-sidebar'>
                                         <div className='admin-sidebar-card'>
                                             <img src={user?.picture} alt='profile' />
@@ -77,6 +86,7 @@ const Admin = (): React.ReactElement => {
                                             </div>
                                         </div>
                                     </div>
+                                    {/* Dashboard / Users / Listings view of the portal */}
                                     <div className='admin-main'>
                                         <div className='admin-card'>
                                             <div className='admin-card-header'>
@@ -87,6 +97,7 @@ const Admin = (): React.ReactElement => {
                                                     {desiredView === 'listings' && 'Listings'}
                                                 </h2>
                                             </div>
+                                            {/* Render desired component based on selected view */}
                                             {desiredView === 'dashboard' && <Dashboard name={user?.name ?? ''} desiredView={desiredView} setDesiredView={setDesiredView} />}
                                             {desiredView === 'users' && <Users />}
                                             {desiredView === 'listings' && <Listings />}
@@ -99,6 +110,7 @@ const Admin = (): React.ReactElement => {
                         <AuthDenied message='You need to be logged in to access this page. If you continue to see this error, please try again later.' permissions={permissions} />
                       </div>
                 }
+                {/* Display message to mobile users (Portal not available) */}
                 <div className='admin-no-mobile'>
                     <FontAwesomeIcon icon={faTriangleExclamation} />
                     <h2>Admin Portal</h2>

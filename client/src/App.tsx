@@ -11,6 +11,7 @@ import ListingPageWrapper from './components/ListingPageWrapper'
 import Admin from './views/Admin'
 import { ApiProvider } from './context/APIContext'
 
+// Main app. Responsible for routing all pages
 const App = (): React.ReactElement => {
   const router = createBrowserRouter([
     { path: '/', element: <Home /> },
@@ -23,6 +24,7 @@ const App = (): React.ReactElement => {
     { path: '*', element: <NotFound /> }
   ])
 
+  // Obtain Auth0 domain and client from env variables
   const domain = process.env.REACT_APP_DOMAIN ?? ''
   const clientId = process.env.REACT_APP_CLIENT_ID ?? ''
   return (

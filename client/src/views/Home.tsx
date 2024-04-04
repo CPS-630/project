@@ -10,6 +10,7 @@ import { convertType, type ListingInfo } from '../types/listings'
 
 const PLACEHOLDER_IMAGE = '/assets/placeholder.jpg'
 
+// Defining Homepage HTML of site
 const Home = (): React.ReactElement => {
   const [listings, setListings] = useState<any>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -21,6 +22,7 @@ const Home = (): React.ReactElement => {
   })
   const { sendRequest } = useApi()
 
+  // Fetch the images for a listing from server
   const getImage = async (id: string): Promise<string[]> => {
     try {
       const { status, response } = await sendRequest<string[]>({
@@ -32,6 +34,8 @@ const Home = (): React.ReactElement => {
         console.error('Images not found')
         return []
       }
+
+      // Return placeholder image if no image available
       if (response.length === 0) {
         return [PLACEHOLDER_IMAGE]
       } else {
@@ -43,6 +47,7 @@ const Home = (): React.ReactElement => {
     }
   }
 
+  // Fetch listings based on current filter set by user (E.g. Type, Location, Price/Date sorting)
   const getListings = async (): Promise<ListingInfo[]> => {
     try {
       const title = p.get('title') !== null ? p.get('title') : ''
@@ -50,6 +55,7 @@ const Home = (): React.ReactElement => {
       const adTypes = filters.adType
       const sortBy = filters.sort
 
+      // Apply filters
       let url: string = 'post?'
       if (title !== '') {
         url += `&title=${title}`
@@ -64,6 +70,7 @@ const Home = (): React.ReactElement => {
         url += `&sort=${sortBy}`
       }
 
+      // Get listings from server
       const { status, response } = await sendRequest<ListingInfo[]>({
         method: 'GET',
         endpoint: url
@@ -79,6 +86,7 @@ const Home = (): React.ReactElement => {
     }
   }
 
+  // Fetch and render listings and their images based on filters given
   useEffect(() => {
     const renderPosts = async (): Promise<any> => {
       setIsLoading(true)
@@ -102,6 +110,7 @@ const Home = (): React.ReactElement => {
     void renderPosts()
   }, [filters, p])
 
+  // Render component
   return (
         <div className="App">
             <header className="App-header">

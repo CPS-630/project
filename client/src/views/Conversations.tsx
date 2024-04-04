@@ -15,6 +15,7 @@ interface ConversationsProps {
   conversations?: Conversation[]
 }
 
+// Conversation page component definition
 const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [conversationsLoading, setConversationsLoading] = useState(true)
@@ -22,9 +23,12 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
   const { sendRequest } = useApi()
   const navigate = useNavigate()
 
+  // Fetch conversations from the server
   const getConversations = async (): Promise<Conversation[]> => {
+    // Display Loading status to user while fetching conversations
     setConversationsLoading(true)
     try {
+      // Request to obtain conversations
       const { status, response } = await sendRequest<Conversation[]>({
         method: 'GET',
         endpoint: 'conversation/user'
@@ -34,10 +38,14 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
         console.error(`Conversations not found for user ${user?.sub}`)
         return []
       }
+
+      // Obtain conversations of user
       const conversations = await Promise.all(
         response.map(async (conversation: any) => {
           const currentUserId = user?.sub
           const isBuyer = currentUserId === conversation.buyerId
+
+          // Obtains user information from server
           const userResponse = await sendRequest<UserInfo>({
             method: 'GET',
             endpoint: `user/${isBuyer ? conversation.sellerId : conversation.buyerId}`
@@ -48,6 +56,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
             return conversation
           }
 
+          // Obtain ad post details
           const postResponse = await sendRequest<ListingInfo>({
             method: 'GET',
             endpoint: `post/details/${conversation.postId}`
@@ -55,6 +64,8 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
 
           const userDetails = userResponse.response
           const postDetails = postResponse.response
+
+          // Return conversation info
           return {
             ...conversation,
             senderName: userDetails.firstName + ' ' + userDetails.lastName,
@@ -64,6 +75,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
           }
         })
       )
+
       setConversationsLoading(false)
       return conversations
     } catch (error) {
@@ -72,10 +84,12 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
     }
   }
 
+  // Allows a user to navigate to a conversation
   const handleClick = (conversation: Conversation): void => {
     navigate('/viewconversation', { state: { conversation } })
   }
 
+  // User deletes one of their conversations
   const handleDeleteConversation = async (conversation: Conversation): Promise<void> => {
     try {
       const { status } = await sendRequest<Conversation[]>({
@@ -88,6 +102,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
         return
       }
 
+      // Update the conversation list after deletion
       const updatedConversations = conversations.filter(c => c.id !== conversation.id)
       setConversations(updatedConversations)
       console.log('Conversation deleted')
@@ -96,6 +111,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
     }
   }
 
+  // Renders the conversations a user a part of by fetching and updating conversation state
   useEffect(() => {
     const renderConversations = async (): Promise<any> => {
       const newConversations = await getConversations()
@@ -105,7 +121,8 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
       }
     }
 
-    if (!isLoading) { void renderConversations() }
+    // Render loading screen while fetching conversations from server
+  if (!isLoading) { void renderConversations() }
   }, [isLoading])
 
   if (conversationsLoading) {
@@ -131,6 +148,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
     )
   }
 
+  // Render page w/ conversations after fetched
   return (
     <div className='App'>
       <header className='App-header'>
@@ -141,6 +159,8 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
             <h1>Conversations</h1>
             <p>View, chat, and manage your conversations.</p>
           </div>
+
+          {/* Conversation list of a user */}
           <div className='conversations-list'>
             {((conversations?.length) != null) && conversations.length > 0
               ? (
