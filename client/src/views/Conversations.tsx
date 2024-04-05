@@ -122,7 +122,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
     }
 
     // Render loading screen while fetching conversations from server
-  if (!isLoading) { void renderConversations() }
+    if (!isLoading) { void renderConversations() }
   }, [isLoading])
 
   if (conversationsLoading) {
