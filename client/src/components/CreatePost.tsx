@@ -6,6 +6,26 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faChevronRight, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { API_DOMAIN, useApi } from '../context/APIContext'
 
+const DEFAULT_CATEGORIES: string[] = [
+  'Electronics',
+  'Clothing & Accessories',
+  'Home & Garden',
+  'Cars & Vehicles',
+  'Sports & Outdoors',
+  'Books',
+  'Music',
+  'Games',
+  'Real Estate',
+  'Jobs & Services',
+  'Pets',
+  'Art & Collectibles',
+  'Health & Beauty',
+  'Baby & Kids',
+  'Tickets',
+  'Free Stuff',
+  'Other'
+]
+
 const CreatePost = (): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()
   const [images, setImages] = useState<File[]>([])
@@ -207,13 +227,7 @@ const CreatePost = (): React.ReactElement => {
                 <label htmlFor="categories">Categories:</label>
                 <select id="categories" name="categories" required onChange={handleSelectChange}>
                   <option selected disabled hidden>Choose a category</option>
-                  <option>Housing</option>
-                  <option>Books</option>
-                  <option>Electronics</option>
-                  <option>Jobs</option>
-                  <option>Services</option>
-                  <option>Events</option>
-                  <option>Other</option>
+                  {DEFAULT_CATEGORIES.map((category) => (<option key={category}>{category}</option>))}
                 </select>
                 <div id="selectedCategories">
                     {categories.map((category, index) => (
