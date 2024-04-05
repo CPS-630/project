@@ -17,13 +17,13 @@ interface ConversationsProps {
 
 const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
   const [conversations, setConversations] = useState<Conversation[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const { user } = useAuth0()
+  const [conversationsLoading, setConversationsLoading] = useState(true)
+  const { user, isLoading } = useAuth0()
   const { sendRequest } = useApi()
   const navigate = useNavigate()
 
   const getConversations = async (): Promise<Conversation[]> => {
-    setIsLoading(true)
+    setConversationsLoading(true)
     try {
       const { status, response } = await sendRequest<Conversation[]>({
         method: 'GET',
@@ -64,7 +64,7 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
           }
         })
       )
-      setIsLoading(false)
+      setConversationsLoading(false)
       return conversations
     } catch (error) {
       console.error('Error fetching conversations', error)
@@ -104,10 +104,11 @@ const Conversations: React.FC<ConversationsProps> = (): React.ReactElement => {
         setConversations(newConversations)
       }
     }
-    void renderConversations()
-  }, [])
 
-  if (isLoading) {
+    if (!isLoading) { void renderConversations() }
+  }, [isLoading])
+
+  if (conversationsLoading) {
     return (
       <div className='App'>
         <header className='App-header'>

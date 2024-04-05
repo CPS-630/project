@@ -94,8 +94,8 @@ const Home = (): React.ReactElement => {
           }
         }))
         setIsLoading(false)
-          setListings(newListings)
-        } catch (error) {
+        setListings(newListings)
+      } catch (error) {
         console.log('Failed to render listings', error)
       }
     }
@@ -116,7 +116,7 @@ const Home = (): React.ReactElement => {
                     <span className="loader"></span>
                   </div>
                 </div>
-              : <Listings response={listings}isProfile={false}/>
+              : <Listings response={listings} isProfile={false}/>
           }
                 </div>
             </header>
