@@ -55,7 +55,16 @@ const ListingPage: React.FC<ListingProps> = ({
     }
 
     if (conversation !== null) {
-      navigate('/viewconversation', { state: { conversation } })
+      navigate('/viewconversation', {
+        state: {
+          conversation: {
+            ...conversation,
+            senderName: userName,
+            postName: title,
+            postPrice: price
+          }
+        }
+      })
       return
     }
 
