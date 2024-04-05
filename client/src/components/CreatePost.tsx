@@ -225,10 +225,26 @@ const CreatePost = (): React.ReactElement => {
           <br />
 
           <label htmlFor="categories">Categories:</label>
-          <p className={`${categories.length === 3 ? 'limit-reached' : 'limit-good'}`}>You can only select 3 categories!</p>
-          <select id="categories" name="categories" required onChange={handleSelectChange}>
+          <p className={`${categories.length === 3 ? 'limit-reached' : 'limit-good'}`}>
+            You can only select 3 categories!
+          </p>
+          <select
+            id="categories"
+            name="categories"
+            required
+            onChange={handleSelectChange}
+            disabled={categories.length >= 3} // Disable the entire select if 3 categories are selected
+          >
             <option selected disabled hidden>Choose a category</option>
-            {DEFAULT_CATEGORIES.map((category) => (<option key={category}>{category}</option>))}
+            {DEFAULT_CATEGORIES.map((category) => (
+              <option
+                key={category}
+                value={category}
+                disabled={categories.length >= 3}
+              >
+                {category}
+              </option>
+            ))}
           </select>
           <div id="selectedCategories">
             {categories.map((category, index) => (
