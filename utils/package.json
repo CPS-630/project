@@ -9,11 +9,13 @@
     "get_users": "ts-node ./scripts/get_users.ts",
     "credentials": "ts-node ./scripts/access_credentials.ts",
     "assign_admin": "ts-node ./scripts/assign_admin_role.ts",
-    "populate_db": "ts-node ./scripts/populate_database.ts"
+    "populate_db": "ts-node ./scripts/populate_database.ts",
+    "populate_images": "ts-node ./scripts/upload_images.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.540.0",
     "auth0": "^4.3.1",
     "dotenv": "^16.4.5",
     "pg-promise": "^11.5.5",
