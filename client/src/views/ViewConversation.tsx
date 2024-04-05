@@ -40,8 +40,8 @@ const ViewConversation = (): React.ReactElement => {
   const inputRef = useRef<any>()
   const conversationId = conversation.id
 
-  const getMessages = async (): Promise<Message[]> => {
-    setIsFetching(true)
+  const getMessages = async (isFetching: boolean = true): Promise<Message[]> => {
+    setIsFetching(isFetching)
     try {
       const { status, response, error } = await sendRequest<Message[]>({
         method: 'GET',
@@ -75,6 +75,18 @@ const ViewConversation = (): React.ReactElement => {
       return []
     }
   }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void getMessages(false).then(newMessages => {
+        if (newMessages.length > 0) {
+          setMessages(newMessages)
+        }
+      })
+    }, 2000)
+
+    return () => { clearInterval(interval) }
+  }, [])
 
   async function getUser (senderId: string): Promise<UserInfo> {
     const { status, response, error } = await sendRequest<UserInfo>({
