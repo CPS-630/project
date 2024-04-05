@@ -32,6 +32,7 @@ interface ConversationInfo {
   sellerId: string
 }
 
+// Definition for page of each individual listing
 const ListingPage: React.FC<ListingProps> = ({
   id, title, adType, userName, imgPaths, description,
   location, categories, price, daysAgo
@@ -43,7 +44,9 @@ const ListingPage: React.FC<ListingProps> = ({
   const navigate = useNavigate()
   const { sendRequest } = useApi()
 
+  // Allow user to create / access an existing conversation w/ ad lister
   const handleContact = async (): Promise<void> => {
+    // Require user to be logged in to create / view conversation
     if (!isAuthenticated) {
       loginWithRedirect({
         authorizationParams: {
@@ -54,6 +57,7 @@ const ListingPage: React.FC<ListingProps> = ({
       return
     }
 
+    // View conversation if it has already been created
     if (conversation !== null) {
       navigate('/viewconversation', {
         state: {
@@ -68,6 +72,7 @@ const ListingPage: React.FC<ListingProps> = ({
       return
     }
 
+    // Create a new conversation and navigate to it
     try {
       const { status, response } = await sendRequest<ConversationInfo>({
         method: 'POST',
@@ -93,7 +98,9 @@ const ListingPage: React.FC<ListingProps> = ({
     }
   }
 
+  // Check info for an existing conversation and fetch its info
   useEffect(() => {
+    // Unauthenticated users cannot have conversations (Not logged in)
     if (!isAuthenticated || id === 0) {
       setConversation(null)
       return
@@ -114,6 +121,7 @@ const ListingPage: React.FC<ListingProps> = ({
     void checkForConversation()
   }, [isAuthenticated, id])
 
+  // Individual listing page HTML
   return (
     <div className='App'>
         <header className='App-header'>

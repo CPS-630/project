@@ -8,14 +8,18 @@ import NavUser from '../components/NavUser'
 import NavPost from '../components/NavPost'
 import Search from '../components/Search'
 
+// Nav definition. Combines Search, NavPost, NavUser components into navbar
 const Nav = (): React.ReactElement => {
   const [isOpen, setOpen] = useState(false)
   const { isAuthenticated } = useAuth0()
+
+  // Toggle main navbar visibility info (user info, searchbar, etc) when opened / closed
   const handleNavToggle = (): void => {
     setOpen(!isOpen)
   }
   return (
     <div className='nav'>
+      {/* Desktop navbar view */}
         <div id='desktop' className='nav container'>
             <Link to='/' className='nav child left'>
                 <img src={'/assets/tmu_logo.png'} alt='logo' className='logo' />
@@ -34,7 +38,7 @@ const Nav = (): React.ReactElement => {
                 <NavUser/>
             </div>
         </div>
-
+        {/* Mobile navbar view */}
         <div id='mobile' className='nav container'>
             <div className='top-nav'>
                 <Link to='/' className='mobile-left'>
@@ -45,6 +49,7 @@ const Nav = (): React.ReactElement => {
                     <FontAwesomeIcon className={`${isOpen ? 'nav-icon active' : 'nav-icon'}`} icon={faBars} onClick={handleNavToggle}/>
                 </div>
             </div>
+            {/* Show / hide Search, NavUser, NavPost components when hamburger icon is clicked */}
             <div id={`${isOpen ? 'show' : 'hidden'}`} className='bottom-nav'>
                 <div className='nav-user-container'>
                     {

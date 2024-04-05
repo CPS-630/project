@@ -17,6 +17,7 @@ export const checkJwt = auth({
   issuerBaseURL: `https://${process.env.AUTH0_DOMAIN}/`,
 });
 
+// Validate if a user is an admin
 const validateIsAdmin = (payload: JWTPayload) => {
   if (payload.permissions === undefined) {
     return false;
@@ -25,6 +26,7 @@ const validateIsAdmin = (payload: JWTPayload) => {
   return permissions?.includes(ADMIN_PERMISSION);
 };
 
+// Require Auth0 authentication
 export const requireAuth0User = asyncHandler(async (
   req: express.Request,
   _res: express.Response,

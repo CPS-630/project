@@ -93,6 +93,7 @@ export const deletePost = async (auth0User: Auth0User, postID: number): Promise<
   const user = await getUser(auth0User.id);
   const post = await getPost(postID);
 
+  // A post can only be deleted by the user who created it or an admin
   if (user.id !== post.user.id && !auth0User.isAdmin) {
     throw new APIError(
       Status.FORBIDDEN,

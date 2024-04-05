@@ -32,11 +32,13 @@ const managementClient = new ManagementClient({
 });
 
 export const retrieveUserInfo = async (accessToken: string, id: string) => {
+  // Use the user information stored in cache if available
   const cachedUser = await redisClient.get(id);
   if (cachedUser !== null) {
     return JSON.parse(cachedUser) as Auth0User;
   }
 
+  // Retrieve user information using the access token (JWT) that was sent in the request
   const user = await userInfoClient
     .getUserInfo(accessToken).then((u) => {
       if (u.status !== 200) {
@@ -90,11 +92,13 @@ export const retrieveAuth0Users = async (options?: {
 };
 
 export const retrieveAuth0User = async (id: string): Promise<Auth0User> => {
+  // Use the user information stored in cache if available
   const cachedUser = await redisClient.get(id);
   if (cachedUser !== null) {
     return JSON.parse(cachedUser) as Auth0User;
   }
 
+  // Retrieve user information from Auth0
   const user = await managementClient
     .users.get({ id }).then((u) => {
       if (u.status !== 200) {
@@ -113,6 +117,9 @@ export const retrieveAuth0User = async (id: string): Promise<Auth0User> => {
       };
     });
 
-  await redisClient.setEx(id, 300, JSON.stringify(user));
+  // store user information in the cache for 5 minutes.
+  redisClient.setEx(id, 300, JSON.stringify(user)).then(() => {
+    LOGGER.debug(`User ${id} stored in cache`);
+  });
   return user;
 };

@@ -30,6 +30,7 @@ export interface Conversation {
   postPrice: number
 }
 
+// HTML for each individual conversation
 const ViewConversation = (): React.ReactElement => {
   const { user, isLoading } = useAuth0()
   const { sendRequest } = useApi()
@@ -40,6 +41,7 @@ const ViewConversation = (): React.ReactElement => {
   const inputRef = useRef<any>()
   const conversationId = conversation.id
 
+  // Fetch messages withn a conversation
   const getMessages = async (isFetching: boolean = true): Promise<Message[]> => {
     setIsFetching(isFetching)
     try {
@@ -53,6 +55,7 @@ const ViewConversation = (): React.ReactElement => {
         return []
       }
 
+      // Enrich conversation messages w/ info on sender user and ad post details
       const enrichedMessages = await Promise.all(response.map(async (message) => {
         const userDetails = await getUser(message.senderId)
         const postDetails = await getPost(conversation.postId)
@@ -65,6 +68,7 @@ const ViewConversation = (): React.ReactElement => {
         }
       }))
 
+      // Sort messages by date sent in descending order
       enrichedMessages.sort((a, b) => {
         return new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime()
       }).reverse()
@@ -88,6 +92,7 @@ const ViewConversation = (): React.ReactElement => {
     return () => { clearInterval(interval) }
   }, [])
 
+  // Fetch user details from server
   async function getUser (senderId: string): Promise<UserInfo> {
     const { status, response, error } = await sendRequest<UserInfo>({
       method: 'GET',
@@ -101,6 +106,7 @@ const ViewConversation = (): React.ReactElement => {
     return response
   }
 
+  // Fetch ad post details from server
   const getPost = async (postId: number): Promise<DetailedListing> => {
     const { status, response, error } = await sendRequest<DetailedListing>({
       method: 'GET',
@@ -113,8 +119,10 @@ const ViewConversation = (): React.ReactElement => {
     return response
   }
 
+  // User sends a message within a conversation
   const handleSendMessage = async (): Promise<any> => {
     try {
+      // Update server DB w/ new message
       const { status, error } = await sendRequest({
         method: 'POST',
         endpoint: `message/${conversationId}`,
@@ -127,6 +135,8 @@ const ViewConversation = (): React.ReactElement => {
         console.error(`Error posting message to conversation ${conversationId}: ${error}`)
         return
       }
+
+      // Obtain new set of messages
       const newMessages = await getMessages()
       if (newMessages.length > 0) {
         setMessages(newMessages)
@@ -137,6 +147,7 @@ const ViewConversation = (): React.ReactElement => {
     }
   }
 
+  // Fetch and render messages when viewing a conversation
   useEffect(() => {
     const renderMessages = async (): Promise<void> => {
       console.log('rendering messages')
@@ -150,6 +161,7 @@ const ViewConversation = (): React.ReactElement => {
     void renderMessages()
   }, [isLoading])
 
+  // Shortcut for users to send a message by pressing "Enter"
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       e.preventDefault()
@@ -157,6 +169,7 @@ const ViewConversation = (): React.ReactElement => {
     }
   }
 
+  // Return properly formatted string of when a message was sent
   const formatDate = (date: string): string => {
     const d = new Date(date)
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset())
@@ -167,6 +180,7 @@ const ViewConversation = (): React.ReactElement => {
     return `${formattedDate} at ${formattedTime}`
   }
 
+  // Display Loading status while fetching conversation messages
   if (isFetching) {
     return (
       <div className='App'>
@@ -208,6 +222,7 @@ const ViewConversation = (): React.ReactElement => {
                   <p>(${conversation.postPrice})</p>
                 </div>
               </div>
+              {/* Conversation message content */}
               <div className='conversation-messages'>
                   { (Array.isArray(messages) && messages.length > 0)
                     ? (
@@ -255,6 +270,7 @@ const ViewConversation = (): React.ReactElement => {
                       <div>Error retrieving messages. Please wait a few moments and then refresh the page.</div>
                           )}
               </div>
+              {/* Message bar */}
               <div className='sendMessage'>
                 <input type='text' ref={inputRef} placeholder='Send Message...' onKeyDown={handleKeyDown}/>
                 <button onClick={() => { handleSendMessage().catch(error => { console.log(error) }) }}><FontAwesomeIcon icon={faPaperPlane} /></button>

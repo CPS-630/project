@@ -18,6 +18,7 @@ export const uploadImages = async (
     throw new APIError(Status.FORBIDDEN, 'You are not authorized to upload images for this post');
   }
 
+  // Uploads each image to the S3 bucket under a distinct post-{id} folder.
   const promises = images.map((image) => s3Client.send(new PutObjectCommand({
     Bucket: S3_BUCKET_NAME,
     Key: `post-${postId}/${image.originalname}`,
@@ -29,6 +30,7 @@ export const uploadImages = async (
 };
 
 export const getImageURLs = async (postId: number): Promise<string[]> => {
+  // Use the cached image URLs if available.
   const contentObjects = await redisClient.get(`post-${postId}`);
   if (contentObjects !== null) {
     return JSON.parse(contentObjects) as string[];
@@ -47,6 +49,7 @@ export const getImageURLs = async (postId: number): Promise<string[]> => {
   }
   // Construct the public URL for each image without signing
   const imageURLs = await Promise.all(Contents.map(async ({ Key }) => {
+    // In production, we need to sign the image URL to allow access. This is necessary for security.
     if (process.env.ENVIRONMENT === 'prod') {
       const command = new GetObjectCommand({
         Bucket: S3_BUCKET_NAME,
@@ -56,6 +59,8 @@ export const getImageURLs = async (postId: number): Promise<string[]> => {
     }
     return `${S3_PUBLIC_URL}/${Key}`;
   }));
+
+  // Cache the image URLs for 24 hours
   redisClient.setEx(`post-${postId}`, 86400, JSON.stringify(imageURLs)).then(() => {
     LOGGER.debug(`Cached S3 image list for post ${postId}`);
   });
