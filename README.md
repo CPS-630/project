@@ -73,10 +73,7 @@ AUTH0_DOMAIN=dev-cv8djkp6271234j7.us.auth0.com
 AUTH0_CLIENT_ID=HY3pomPr3uHny7BI1XMiWrVXJSuRmg6l
 AUTH0_CLIENT_SECRET=<AUTH0_CLIENT_SECret>
 
-DB_USERNAME='admin'
-DB_PASSWORD='password'
-DB_NAME='tmu_connect'
-DB_HOST='localhost'
+DATABASE_URL=postgres://admin:password@localhost:5432/tmu_connect
 
 S3_ENDPOINT='http://127.0.0.1:9000'
 S3_ACCESS_KEY='root'
