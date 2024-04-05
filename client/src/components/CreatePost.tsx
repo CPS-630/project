@@ -9,6 +9,7 @@ import { API_DOMAIN, useApi } from '../context/APIContext'
 const CreatePost = (): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()
   const [images, setImages] = useState<File[]>([])
+  const [categories, setCategories] = useState<string[]>([])
   const [displayImages, setDisplays] = useState<Record<number, string>>({})
   const [imageError, setImageError] = useState<string>('')
   const navigate = useNavigate()
@@ -92,7 +93,7 @@ const CreatePost = (): React.ReactElement => {
       adType: form.adType.value,
       description: form.description.value,
       location: form.location.value,
-      categories: form.categories.value.split(/,\s*/),
+      categories,
       price: parseFloat(form.price.value as string)
     }
 
@@ -146,6 +147,16 @@ const CreatePost = (): React.ReactElement => {
     }
   }
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const selected = e.target.value
+    setCategories(categories => {
+      if (!categories.includes(selected)) {
+        return [...categories, selected]
+      }
+      return categories
+    })
+  }
+
   return (
         <div className='create-post'>
           <div className='create-post-container'>
@@ -194,7 +205,24 @@ const CreatePost = (): React.ReactElement => {
                 <br/>
 
                 <label htmlFor="categories">Categories:</label>
-                <input type="text" id="categories" name="categories" required onKeyDown={handleKeyDown}/>
+                <select id="categories" name="categories" required onChange={handleSelectChange}>
+                  <option selected disabled hidden>Choose a category</option>
+                  <option>Housing</option>
+                  <option>Books</option>
+                  <option>Electronics</option>
+                  <option>Jobs</option>
+                  <option>Services</option>
+                  <option>Events</option>
+                  <option>Other</option>
+                </select>
+                <div id="selectedCategories">
+                    {categories.map((category, index) => (
+                        <div key={index} className="selectedCategory">
+                            <p>{category}</p>
+                            <FontAwesomeIcon icon={faTrashCan} onClick={() => { setCategories(categories.filter((_, i) => i !== index)) }}/>
+                        </div>
+                    ))}
+                </div>
                 <br/>
 
                 <label htmlFor="price">Price:</label>
