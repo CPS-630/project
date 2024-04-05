@@ -26,7 +26,7 @@ const validateIsAdmin = (payload: JWTPayload) => {
   return permissions?.includes(ADMIN_PERMISSION);
 };
 
-// Require Auth0 authentication 
+// Require Auth0 authentication
 export const requireAuth0User = asyncHandler(async (
   req: express.Request,
   _res: express.Response,
