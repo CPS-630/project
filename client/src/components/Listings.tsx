@@ -8,9 +8,10 @@ import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
 interface ListingsComponentProps {
   response: ListingProps[]
+  isProfile: boolean
 }
 
-const Listings: React.FC<ListingsComponentProps> = ({ response }) => {
+const Listings: React.FC<ListingsComponentProps> = ({ response, isProfile }) => {
   const [currentPage, setCurrentPage] = useState(0)
   const itemsPerPage = 10
 
@@ -62,6 +63,7 @@ const Listings: React.FC<ListingsComponentProps> = ({ response }) => {
                 categories={item.categories}
                 price={item.price}
                 postDate={item.postDate}
+                isProfile={isProfile}
               />
             ))
         }

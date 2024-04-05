@@ -1,6 +1,7 @@
 import {
-  DeleteObjectsCommand, ListObjectsCommand, PutObjectCommand,
+  DeleteObjectsCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { S3_BUCKET_NAME, S3_PUBLIC_URL, s3Client } from '../configs/s3';
 import { getPost } from './posts';
 import { APIError, Auth0User, Status } from '../types';
@@ -36,7 +37,16 @@ export const getImageURLs = async (postId: number): Promise<string[]> => {
     return [];
   }
   // Construct the public URL for each image without signing
-  return Promise.all(Contents.map(async ({ Key }) => `${S3_PUBLIC_URL}/${Key}`));
+  return Promise.all(Contents.map(async ({ Key }) => {
+    if (process.env.ENVIRONMENT === 'prod') {
+      const command = new GetObjectCommand({
+        Bucket: S3_BUCKET_NAME,
+        Key,
+      });
+      return getSignedUrl(s3Client, command, { expiresIn: 120 });
+    }
+    return `${S3_PUBLIC_URL}/${Key}`;
+  }));
 };
 
 export const deletePostImages = async (auth0User: Auth0User, postId: number): Promise<void> => {

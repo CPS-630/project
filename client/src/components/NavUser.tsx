@@ -45,7 +45,11 @@ const NavUser = (): React.ReactElement => {
                     : null
                 }
                 <p id='logout' onClick={(_) => {
-                  logout()
+                  logout({
+                    logoutParams: {
+                      returnTo: `${window.location.protocol}//${window.location.host}`
+                    }
+                  })
                     .then(r => { console.log(r) })
                     .catch(e => { console.log(e) })
                 }}>Logout</p>

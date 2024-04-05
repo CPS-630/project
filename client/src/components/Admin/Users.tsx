@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ReactPaginate from 'react-paginate'
+import { useAuth0 } from '@auth0/auth0-react'
 import './style/Listings.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faArrowLeft, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
@@ -7,6 +8,7 @@ import { useApi } from '../../context/APIContext'
 import { type UserInfo } from '../../types/user'
 
 const Users = (): React.ReactElement => {
+  const { user } = useAuth0()
   const [users, setUsers] = useState<UserInfo[]>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
@@ -14,6 +16,7 @@ const Users = (): React.ReactElement => {
   const [filter, setFilter] = useState('')
   const [query, setQuery] = useState('')
   const [queryActive, setQueryActive] = useState(false)
+  const [curUser, setCurUser] = useState('')
   const { sendRequest } = useApi()
   const itemsPerPage = 10
 
@@ -50,6 +53,18 @@ const Users = (): React.ReactElement => {
     }
   }
 
+  async function deleteUser (userID: string): Promise<void> {
+    const { status, error } = await sendRequest({
+      method: 'DELETE',
+      endpoint: `user/${userID}`
+    })
+    if (status !== 200) {
+      console.error(`User could not be deleted: ${error}`)
+    } else {
+      void fetchUsers()
+    }
+  }
+
   useEffect(() => {
     fetchUsers().catch(console.error)
   }, [query])
@@ -80,6 +95,17 @@ const Users = (): React.ReactElement => {
   const totalResultsText = currentPage === Math.ceil(users.length / itemsPerPage) - 1
     ? `Displaying ${users.length} of ${users.length} results`
     : `Displaying ${currentItems.length} of ${users.length} results`
+
+  useEffect(() => {
+    const getID = async (): Promise<void> => {
+      const curID: string | undefined = user?.sub
+      if (curID !== undefined) {
+        setCurUser(curID)
+        void fetchUsers()
+      }
+    }
+    void getID()
+  }, [query])
 
   return (
     <div className='listing-container'>
@@ -141,10 +167,13 @@ const Users = (): React.ReactElement => {
                       <td>{user.email}</td>
                       <td>{user.year}</td>
                       <td>{user.major}</td>
-                      <td>
-                        <FontAwesomeIcon icon={faTimesCircle} title='Delete User' />
-                      </td>
-                      {/* Add more table cells as needed */}
+                      {
+                        curUser !== user.id
+                          ? <td>
+                              <FontAwesomeIcon icon={faTimesCircle} title='Delete User' onClick={() => { void deleteUser(user.id) }} />
+                            </td>
+                          : <td></td>
+                      }
                     </tr>
                 ))
             }

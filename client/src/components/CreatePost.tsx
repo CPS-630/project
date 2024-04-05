@@ -4,7 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faChevronRight, faTrashCan } from '@fortawesome/free-solid-svg-icons'
-import { useApi } from '../context/APIContext'
+import { API_DOMAIN, useApi } from '../context/APIContext'
 
 const CreatePost = (): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()
@@ -125,7 +125,7 @@ const CreatePost = (): React.ReactElement => {
       formData.append('post-images', image)
     })
 
-    void fetch(`http://localhost:8080/post/image/upload/${postID}`, {
+    void fetch(`${API_DOMAIN}post/image/upload/${postID}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`

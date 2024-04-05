@@ -83,53 +83,44 @@ const Home = (): React.ReactElement => {
     const renderPosts = async (): Promise<any> => {
       setIsLoading(true)
       const posts = await getListings()
-
-      if (posts !== undefined) {
-        try {
-          const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
-            const img = await getImage(post.id.toString())
-            if (img !== undefined) {
-              return {
-                id: post.id,
-                title: post.title,
-                adType: await convertType(post.adType),
-                imgPaths: img,
-                description: post.description,
-                location: post.location,
-                categories: post.categories,
-                price: parseFloat(post.price),
-                postDate: post.postDate
-              }
-            }
-          }))
-          setIsLoading(false)
+      try {
+        const newListings = await Promise.all(posts.map(async (post: ListingInfo) => {
+          const img = await getImage(post.id.toString())
+          return {
+            ...post,
+            adType: await convertType(post.adType),
+            imgPaths: img,
+            price: parseFloat(post.price)
+          }
+        }))
+        setIsLoading(false)
           setListings(newListings)
-        } catch {
-        }
+        } catch (error) {
+        console.log('Failed to render listings', error)
       }
     }
     void renderPosts()
   }, [filters, p])
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <Nav/>
-        <div className='content'>
-          <Filter setFilters={setFilters}/>
-          <FilterMobile setFilters={setFilters}/>
-          {
+        <div className="App">
+            <header className="App-header">
+                <Nav/>
+                <div className='content'>
+                  <Filter setFilters={setFilters}/>
+                  <FilterMobile setFilters={setFilters}/>
+                  {
             isLoading
               ? <div className='no-listings' id='home-load'>
                   <div className='loading-content'>
                     <span className="loader"></span>
                   </div>
                 </div>
-              : <Listings response={listings}/>
+              : <Listings response={listings}isProfile={false}/>
           }
+                </div>
+            </header>
         </div>
-      </header>
-    </div>
   )
 }
 

@@ -28,6 +28,8 @@ const ApiContext = createContext<ApiContextInterface>({
 
 type Methods = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS'
 
+export const API_DOMAIN = process.env.REACT_APP_API_DOMAIN ?? 'http://localhost:8080/'
+
 export const ApiProvider = (opts: { children: React.ReactNode }): React.ReactElement => {
   const { user, getAccessTokenSilently } = useAuth0()
 
@@ -49,7 +51,7 @@ export const ApiProvider = (opts: { children: React.ReactNode }): React.ReactEle
         }
       }
 
-      return await fetch(`http://localhost:8080/${options?.endpoint}`, init)
+      return await fetch(`${API_DOMAIN}${options?.endpoint}`, init)
         .then(async resp => {
           const isJson = resp.headers.get('content-type')?.includes('application/json')
           const data = Boolean(isJson) && resp.status !== 204 ? await resp.json() : null

@@ -1,12 +1,12 @@
 export interface ListingInfo {
   id: number
+  postDate: string
   title: string
-  adType: string
-  description: string
   location: string
+  description: string
+  adType: string
   categories: string[]
   price: string
-  postDate: string
 }
 
 export const convertType = async (input: string): Promise<string> => {

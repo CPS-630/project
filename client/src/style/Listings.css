@@ -192,3 +192,12 @@ li, .next {
         margin-top: 1rem;
     }
 }
+
+.delete-button {
+    color: rgb(199, 0, 0);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1;
+    margin-right: 5%;
+}

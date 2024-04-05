@@ -22,6 +22,7 @@ export interface ListingProps {
   price: number
   postDate: string
   daysAgo?: string
+  isProfile: boolean
 }
 
 interface ConversationInfo {

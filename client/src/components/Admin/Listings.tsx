@@ -6,19 +6,8 @@ import { faArrowRight, faArrowLeft, faTimesCircle } from '@fortawesome/free-soli
 import { useApi } from '../../context/APIContext'
 import { type ListingInfo } from '../../types/listings'
 
-interface Post {
-  id: number
-  postDate: string
-  title: string
-  location: string
-  description: string
-  adType: string
-  category: string[]
-  price: string
-}
-
 const Listings = (): React.ReactElement => {
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<ListingInfo[]>([])
   const [currentPage, setCurrentPage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [inputText, setInputText] = useState('')
@@ -47,24 +36,25 @@ const Listings = (): React.ReactElement => {
         console.log(`Could not retrieve posts: ${error}`)
         return
       }
-
-      const posts = response.map((post) => ({
-        id: post.id,
-        title: post.title,
-        location: post.location,
-        category: post.categories,
-        price: post.price,
-        description: post.description,
-        adType: post.adType,
-        postDate: post.postDate
-      }))
-      setPosts(posts)
+      setPosts(response)
       if (query !== '') {
         setQueryActive(true)
       }
       setIsLoading(false)
     } catch (error) {
       console.error(error)
+    }
+  }
+
+  async function deletePost (postID: number): Promise<void> {
+    const { status, error } = await sendRequest({
+      method: 'DELETE',
+      endpoint: `post/${postID}`
+    })
+    if (status !== 200) {
+      console.error(`Ad could not be deleted; ${error}`)
+    } else {
+      void fetchPosts()
     }
   }
 
@@ -159,10 +149,10 @@ const Listings = (): React.ReactElement => {
                       <td>{post.postDate}</td>
                       <td>{post.title}</td>
                       <td>{post.location}</td>
-                      <td>{post.category.join(', ')}</td>
+                      <td>{post.categories.join(', ')}</td>
                       <td>${post.price}</td>
                       <td>
-                        <FontAwesomeIcon title='Delete Listing' icon={faTimesCircle} />
+                        <FontAwesomeIcon title='Delete Listing' icon={faTimesCircle} onClick={() => { void deletePost(post.id) }} />
                       </td>
                     </tr>
                 ))
