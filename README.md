@@ -67,10 +67,10 @@ npm install
 ```
 
 Create `.env` file under the `server` directory with the following Env variables:
-```
+```env
 BACKEND_AUDIENCE='http://localhost:3000'
 AUTH0_DOMAIN=dev-cv8djkp6271234j7.us.auth0.com
-AUTH0_CLIENT_ID=HY3pomPr3uHny7BI1XMiWrVXJSuRmg6l
+AUTH0_CLIENT_ID=Nc7lSYxokOGX1JNFRahgzzmpOdG8LQt7
 AUTH0_CLIENT_SECRET=<AUTH0_CLIENT_SECret>
 
 DATABASE_URL=postgres://admin:password@localhost:5432/tmu_connect

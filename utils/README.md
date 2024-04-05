@@ -12,11 +12,19 @@ Before running any of the scripts. You will need to run `npm install` to install
 
 Also add a `.env` file to the root of the `utils` directory with the following content:
 ```env
+BACKEND_AUDIENCE='http://localhost:3000'
 AUTH0_DOMAIN='dev-cv8djkp6271234j7.us.auth0.com'
 AUTH0_CLIENT_ID='aF5vGpwFPuQxuWJRclhETlm8hS7wgad5'
 AUTH0_CLIENT_SECRET=<AUTH0_CLIENT_SECRET>
-BACKEND_AUDIENCE='http://localhost:3000'
+
+DATABASE_URL=postgres://admin:password@localhost:5432/tmu_connect
+
+S3_ENDPOINT='http://127.0.0.1:9000'
+S3_ACCESS_KEY='root'
+S3_SECRET_KEY='password'
 ```
+**NOTE: Auth0 SECRET is sensitive and has not been included in the repo. Please request for the client secret or
+identify where it may be provided.**
 
 ### Get Auth0 Test Users
 
