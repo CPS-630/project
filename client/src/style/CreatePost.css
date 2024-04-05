@@ -224,3 +224,14 @@
 .selectedCategory p {
     margin: 0;
 }
+
+.limit-good {
+    display: none;
+}
+
+.limit-reached {
+    font-size: 1rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    color: orangered;
+}

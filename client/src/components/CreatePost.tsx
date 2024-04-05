@@ -178,75 +178,76 @@ const CreatePost = (): React.ReactElement => {
   }
 
   return (
-        <div className='create-post'>
-          <div className='create-post-container'>
-            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> Post Ad</p>
-            <h2>Post An Ad</h2>
-            <form id="adForm" onSubmit={(event) => { void handleCreatePost(event) }}>
-                <label htmlFor="adTitle">Title:</label>
-                <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown}/>
-                <br/>
+    <div className='create-post'>
+      <div className='create-post-container'>
+        <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> Post Ad</p>
+        <h2>Post An Ad</h2>
+        <form id="adForm" onSubmit={(event) => { void handleCreatePost(event) }}>
+          <label htmlFor="adTitle">Title:</label>
+          <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown} />
+          <br />
 
-                <label htmlFor="imageUpload" className="uploadLabel">Upload Images (4 Maximum):</label>
-                <div id="imageUpload">
-                        <div id="arrowWrapper">
-                            <div id="uploadArrow"><FontAwesomeIcon icon={faUpload}/></div>
-                        </div>
-                    <input type="file" id="adImages" name="adImages" multiple onChange={handleImageUpload}
-                        accept="image/jpeg, image/jpg, image/png"/>
-                </div>
-                {(imageError !== '') && <div id="imageError">{imageError}</div>}
-                <div id="imagePreview">
+          <label htmlFor="imageUpload" className="uploadLabel">Upload Images (4 Maximum):</label>
+          <div id="imageUpload">
+            <div id="arrowWrapper">
+              <div id="uploadArrow"><FontAwesomeIcon icon={faUpload} /></div>
+            </div>
+            <input type="file" id="adImages" name="adImages" multiple onChange={handleImageUpload}
+              accept="image/jpeg, image/jpg, image/png" />
+          </div>
+          {(imageError !== '') && <div id="imageError">{imageError}</div>}
+          <div id="imagePreview">
 
-                  {Object.entries(displayImages).map(([key, value]) => (
-                      <div key={key} className="uploadedImages">
-                          <img key={key} src={value} />
-                          <button onClick={(event) => { handleImageDelete(event, Number(key)) }}><FontAwesomeIcon icon={faTrashCan}/></button>
-                      </div>
-                  ))}
+            {Object.entries(displayImages).map(([key, value]) => (
+              <div key={key} className="uploadedImages">
+                <img key={key} src={value} />
+                <button onClick={(event) => { handleImageDelete(event, Number(key)) }}><FontAwesomeIcon icon={faTrashCan} /></button>
+              </div>
+            ))}
 
-                </div>
-                <br/>
+          </div>
+          <br />
 
-                <label htmlFor="adType">Ad Type:</label>
-                <select id="adType" name="adType" required>
-                    <option value="S">Selling</option>
-                    <option value="W">Wanted</option>
-                    <option value="A">Academic Service</option>
-                </select>
-                <br/>
+          <label htmlFor="adType">Ad Type:</label>
+          <select id="adType" name="adType" required>
+            <option value="S">Selling</option>
+            <option value="W">Wanted</option>
+            <option value="A">Academic Service</option>
+          </select>
+          <br />
 
-                <label htmlFor="description">Description:</label>
-                <textarea id="description" name="description" required></textarea>
-                <br/>
+          <label htmlFor="description">Description:</label>
+          <textarea id="description" name="description" required></textarea>
+          <br />
 
-                <label htmlFor="location">Location:</label>
-                <input type="text" id="location" name="location" required onKeyDown={handleKeyDown}/>
-                <br/>
+          <label htmlFor="location">Location:</label>
+          <input type="text" id="location" name="location" required onKeyDown={handleKeyDown} />
+          <br />
 
-                <label htmlFor="categories">Categories:</label>
-                <select id="categories" name="categories" required onChange={handleSelectChange}>
-                  <option selected disabled hidden>Choose a category</option>
-                  {DEFAULT_CATEGORIES.map((category) => (<option key={category}>{category}</option>))}
-                </select>
-                <div id="selectedCategories">
-                    {categories.map((category, index) => (
-                        <div key={index} className="selectedCategory">
-                            <p>{category}</p>
-                            <FontAwesomeIcon icon={faTrashCan} onClick={() => { setCategories(categories.filter((_, i) => i !== index)) }}/>
-                        </div>
-                    ))}
-                </div>
-                <br/>
+          <label htmlFor="categories">Categories:</label>
+          <p className={`${categories.length === 3 ? 'limit-reached' : 'limit-good'}`}>You can only select 3 categories!</p>
+          <select id="categories" name="categories" required onChange={handleSelectChange}>
+            <option selected disabled hidden>Choose a category</option>
+            {DEFAULT_CATEGORIES.map((category) => (<option key={category}>{category}</option>))}
+          </select>
+          <div id="selectedCategories">
+            {categories.map((category, index) => (
+              <div key={index} className="selectedCategory">
+                <p>{category}</p>
+                <FontAwesomeIcon icon={faTrashCan} onClick={() => { setCategories(categories.filter((_, i) => i !== index)) }} />
+              </div>
+            ))}
+          </div>
+          <br />
 
-                <label htmlFor="price">Price:</label>
-                <input type="number" id="price" name="price" required min="0" step="0.01" onKeyDown={handleKeyDown}/>
-                <br/>
+          <label htmlFor="price">Price:</label>
+          <input type="number" id="price" name="price" required min="0" step="0.01" onKeyDown={handleKeyDown} />
+          <br />
 
-                <button type="submit">Submit</button>
-            </form>
-        </div>
+          <button type="submit">Submit</button>
+        </form>
       </div>
+    </div>
   )
 }
 
