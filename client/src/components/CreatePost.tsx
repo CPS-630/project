@@ -6,9 +6,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpload, faChevronRight, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { API_DOMAIN, useApi } from '../context/APIContext'
 
+const DEFAULT_CATEGORIES: string[] = [
+  'Electronics',
+  'Clothing & Accessories',
+  'Home & Garden',
+  'Cars & Vehicles',
+  'Sports & Outdoors',
+  'Books',
+  'Music',
+  'Games',
+  'Real Estate',
+  'Jobs & Services',
+  'Pets',
+  'Art & Collectibles',
+  'Health & Beauty',
+  'Baby & Kids',
+  'Tickets',
+  'Free Stuff',
+  'Other'
+]
+
 const CreatePost = (): React.ReactElement => {
   const { getAccessTokenSilently } = useAuth0()
   const [images, setImages] = useState<File[]>([])
+  const [categories, setCategories] = useState<string[]>([])
   const [displayImages, setDisplays] = useState<Record<number, string>>({})
   const [imageError, setImageError] = useState<string>('')
   const navigate = useNavigate()
@@ -92,7 +113,7 @@ const CreatePost = (): React.ReactElement => {
       adType: form.adType.value,
       description: form.description.value,
       location: form.location.value,
-      categories: form.categories.value.split(/,\s*/),
+      categories,
       price: parseFloat(form.price.value as string)
     }
 
@@ -146,65 +167,87 @@ const CreatePost = (): React.ReactElement => {
     }
   }
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    const selected = e.target.value
+    setCategories(categories => {
+      if (!categories.includes(selected)) {
+        return [...categories, selected]
+      }
+      return categories
+    })
+  }
+
   return (
-        <div className='create-post'>
-          <div className='create-post-container'>
-            <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> Post Ad</p>
-            <h2>Post An Ad</h2>
-            <form id="adForm" onSubmit={(event) => { void handleCreatePost(event) }}>
-                <label htmlFor="adTitle">Title:</label>
-                <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown}/>
-                <br/>
+    <div className='create-post'>
+      <div className='create-post-container'>
+        <p id='breadcrumbs'> <Link id='back-to' to='/'>Home</Link> <FontAwesomeIcon icon={faChevronRight} /> Post Ad</p>
+        <h2>Post An Ad</h2>
+        <form id="adForm" onSubmit={(event) => { void handleCreatePost(event) }}>
+          <label htmlFor="adTitle">Title:</label>
+          <input type="text" id="adTitle" name="adTitle" required maxLength={200} onKeyDown={handleKeyDown} />
+          <br />
 
-                <label htmlFor="imageUpload" className="uploadLabel">Upload Images (4 Maximum):</label>
-                <div id="imageUpload">
-                        <div id="arrowWrapper">
-                            <div id="uploadArrow"><FontAwesomeIcon icon={faUpload}/></div>
-                        </div>
-                    <input type="file" id="adImages" name="adImages" multiple onChange={handleImageUpload}
-                        accept="image/jpeg, image/jpg, image/png"/>
-                </div>
-                {(imageError !== '') && <div id="imageError">{imageError}</div>}
-                <div id="imagePreview">
+          <label htmlFor="imageUpload" className="uploadLabel">Upload Images (4 Maximum):</label>
+          <div id="imageUpload">
+            <div id="arrowWrapper">
+              <div id="uploadArrow"><FontAwesomeIcon icon={faUpload} /></div>
+            </div>
+            <input type="file" id="adImages" name="adImages" multiple onChange={handleImageUpload}
+              accept="image/jpeg, image/jpg, image/png" />
+          </div>
+          {(imageError !== '') && <div id="imageError">{imageError}</div>}
+          <div id="imagePreview">
 
-                  {Object.entries(displayImages).map(([key, value]) => (
-                      <div key={key} className="uploadedImages">
-                          <img key={key} src={value} />
-                          <button onClick={(event) => { handleImageDelete(event, Number(key)) }}><FontAwesomeIcon icon={faTrashCan}/></button>
-                      </div>
-                  ))}
+            {Object.entries(displayImages).map(([key, value]) => (
+              <div key={key} className="uploadedImages">
+                <img key={key} src={value} />
+                <button onClick={(event) => { handleImageDelete(event, Number(key)) }}><FontAwesomeIcon icon={faTrashCan} /></button>
+              </div>
+            ))}
 
-                </div>
-                <br/>
+          </div>
+          <br />
 
-                <label htmlFor="adType">Ad Type:</label>
-                <select id="adType" name="adType" required>
-                    <option value="S">Selling</option>
-                    <option value="W">Wanted</option>
-                    <option value="A">Academic Service</option>
-                </select>
-                <br/>
+          <label htmlFor="adType">Ad Type:</label>
+          <select id="adType" name="adType" required>
+            <option value="S">Selling</option>
+            <option value="W">Wanted</option>
+            <option value="A">Academic Service</option>
+          </select>
+          <br />
 
-                <label htmlFor="description">Description:</label>
-                <textarea id="description" name="description" required></textarea>
-                <br/>
+          <label htmlFor="description">Description:</label>
+          <textarea id="description" name="description" required></textarea>
+          <br />
 
-                <label htmlFor="location">Location:</label>
-                <input type="text" id="location" name="location" required onKeyDown={handleKeyDown}/>
-                <br/>
+          <label htmlFor="location">Location:</label>
+          <input type="text" id="location" name="location" required onKeyDown={handleKeyDown} />
+          <br />
 
-                <label htmlFor="categories">Categories:</label>
-                <input type="text" id="categories" name="categories" required onKeyDown={handleKeyDown}/>
-                <br/>
+          <label htmlFor="categories">Categories:</label>
+          <p className={`${categories.length === 3 ? 'limit-reached' : 'limit-good'}`}>You can only select 3 categories!</p>
+          <select id="categories" name="categories" required onChange={handleSelectChange}>
+            <option selected disabled hidden>Choose a category</option>
+            {DEFAULT_CATEGORIES.map((category) => (<option key={category}>{category}</option>))}
+          </select>
+          <div id="selectedCategories">
+            {categories.map((category, index) => (
+              <div key={index} className="selectedCategory">
+                <p>{category}</p>
+                <FontAwesomeIcon icon={faTrashCan} onClick={() => { setCategories(categories.filter((_, i) => i !== index)) }} />
+              </div>
+            ))}
+          </div>
+          <br />
 
-                <label htmlFor="price">Price:</label>
-                <input type="number" id="price" name="price" required min="0" step="0.01" onKeyDown={handleKeyDown}/>
-                <br/>
+          <label htmlFor="price">Price:</label>
+          <input type="number" id="price" name="price" required min="0" step="0.01" onKeyDown={handleKeyDown} />
+          <br />
 
-                <button type="submit">Submit</button>
-            </form>
-        </div>
+          <button type="submit">Submit</button>
+        </form>
       </div>
+    </div>
   )
 }
 

@@ -191,3 +191,47 @@
 .uploadedImages:hover button {
     opacity: 1;
 }
+
+#selectedCategories {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+}
+
+.selectedCategory {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    font-size: 1rem;
+    background-color: #00448b;
+    color: white;
+    padding: 0.6rem;
+    border-radius: 50px;
+    align-items: center;
+}
+
+.selectedCategory svg {
+    display: none;
+    font-size: 0.8rem;
+}
+
+.selectedCategory:hover svg {
+    display: inline;
+    cursor: pointer;
+}
+
+
+.selectedCategory p {
+    margin: 0;
+}
+
+.limit-good {
+    display: none;
+}
+
+.limit-reached {
+    font-size: 1rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    color: orangered;
+}
