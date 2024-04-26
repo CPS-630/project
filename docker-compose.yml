@@ -45,6 +45,21 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--web.listen-address=127.0.0.1:9090'
     network_mode: "host"
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitor/dashboard:/etc/grafana/provisioning
+      - grafana_storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=password
+      - GF_SERVER_HTTP_ADDR=127.0.0.1
+      - GF_SERVER_HTTP_PORT=3030
+    depends_on:
+      - prometheus
+    network_mode: "host"
 volumes:
   minio:
     driver: local
@@ -53,4 +68,6 @@ volumes:
   redis_cache:
     driver: local
   prometheus_data:
+    driver: local
+  grafana_storage:
     driver: local
